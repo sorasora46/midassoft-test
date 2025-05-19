@@ -1,3 +1,4 @@
+// O(m * n)
 function minEnergy(
     start: number,
     shops: number[], // n
@@ -14,10 +15,7 @@ function minEnergy(
         }
         
         // calculate bus energy
-        const busStation = findNearestBusToX(shopToGo, stations);
-        const walkToBusE = findWalkingEnergyToX(currentPos, busStation);
-        const busToShopE = findWalkingEnergyToX(busStation, shopToGo)
-        const takeBusTotalE = walkToBusE + busToShopE;
+        const takeBusTotalE = calculateBusEnergyToX(currentPos, shopToGo, stations);
         
         // calculate walk
         const takeWalkE = findWalkingEnergyToX(currentPos, shopToGo);
@@ -28,7 +26,19 @@ function minEnergy(
         currentPos = shopToGo;
         seen.add(shopToGo);
     }
+    // calculate energy used to go to target
+    const busToTargetE = calculateBusEnergyToX(currentPos, target ,stations);
+    const walkToTargetE = findWalkingEnergyToX(currentPos, target);
+    totalEnergy += Math.min(busToTargetE, walkToTargetE);
+
     return totalEnergy;
+}
+
+function calculateBusEnergyToX(current: number, destination: number, stations: number[]): number {
+    const busStation = findNearestBusToX(destination, stations);
+    const walkToBusE = findWalkingEnergyToX(current, busStation);
+    const busToShopE = findWalkingEnergyToX(busStation, destination)
+    return walkToBusE + busToShopE;
 }
 
 function findNearestBusToX(x: number, stations: number[]): number {
